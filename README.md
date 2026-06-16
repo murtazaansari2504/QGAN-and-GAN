@@ -50,6 +50,12 @@ QGAN-and-GAN/
 │   ├── generationds.py
 │   └── requirements.txt
 │
+├── classical_gan/
+│   ├── generator.py
+│   ├── discriminator.py
+│   ├── train.py
+│   └── gan_performance.png
+│
 └── README.md
 ```
 
@@ -59,6 +65,7 @@ QGAN-and-GAN/
 
 * Python 3.11+
 * PyTorch
+* Matplotlib
 
 Install dependencies using:
 
@@ -69,7 +76,7 @@ pip install -r "LR dataset/requirements.txt"
 or directly:
 
 ```bash
-pip install torch
+pip install torch matplotlib
 ```
 
 ---
@@ -100,12 +107,17 @@ Shape of y: torch.Size([500, 1])
 Number of X samples: 500
 Number of y samples: 500
 ```
+### Running the Classical GAN
 
----
+To execute the classical adversarial training loop, navigate to the project root directory and run:
+
+```bash
+python classical_gan/train.py
+```
+
 
 ## Future Work
 
-* Classical GAN implementation using PyTorch
 * Quantum GAN (QGAN) implementation using PennyLane/Qiskit
 * Comparative analysis between GAN and QGAN performance
 * Visualization of generated distributions
@@ -118,3 +130,8 @@ Number of y samples: 500
 **Murtaza Ansari**
 
 GitHub: https://github.com/murtazaansari2504
+
+**Devansh Rathore**
+
+GitHub: https://github.com/devansh025
+
