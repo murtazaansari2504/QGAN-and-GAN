@@ -16,16 +16,17 @@ X = torch.arange(start, end, step).unsqueeze(dim=1)
 y = weight * X + bias
 
 # Display the first 400 samples
-print("First 400 values of X:")
-print(X[:400])
-
-print("\nFirst 400 values of y:")
-print(y[:400])
-
+if __name__ == "__main__":
+  print("First 400 values of X:")
+  print(X[:400])
+  
+  print("\nFirst 400 values of y:")
+  print(y[:400])
+  
 # Display tensor shapes
-print("\nShape of X:", X.shape)
-print("Shape of y:", y.shape)
+  print("\nShape of X:", X.shape)
+  print("Shape of y:", y.shape)
 
-# Display total number of samples
-print("\nNumber of X samples:", len(X))
-print("Number of y samples:", len(y))
+  # Display total number of samples
+  print("\nNumber of X samples:", len(X))
+  print("Number of y samples:", len(y))
