@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 # Get the directory where train.py is currently located (.../classical_gan)
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -34,7 +34,7 @@ real_data = torch.cat((X, y), dim=1)
 # HYPERPARAMETERS
 BATCH_SIZE = 32
 LR = 0.001
-EPOCHS = 300
+EPOCHS = 1000
 
 # INITIALIZATION
 netG = Generator()
@@ -103,3 +103,39 @@ plt.grid(True)
 save_path = os.path.join(current_dir, 'gan_performance.png')
 plt.savefig(save_path)
 print(f"Plot successfully saved to: {save_path}")
+
+# ADDED DIAGNOSTIC: DISCRIMINATOR DECISION HEATMAP
+print("Generating decision boundary heatmap...")
+
+# Create a dense grid of 2D coordinates to query the Discriminator
+x_grid_vals = np.linspace(-0.2, 1.2, 100)
+y_grid_vals = np.linspace(0.0, 1.2, 100)
+X_mesh, Y_mesh = np.meshgrid(x_grid_vals, y_grid_vals)
+grid_points = np.vstack([X_mesh.ravel(), Y_mesh.ravel()]).T
+grid_tensor = torch.tensor(grid_points, dtype=torch.float32)
+
+# Pass the coordinates mesh grid through the trained Discriminator
+with torch.no_grad():
+    predictions_prob = netD(grid_tensor).numpy().reshape(X_mesh.shape)
+
+plt.figure(figsize=(10, 6))
+
+# Render continuous decision contours (Red is high probability, Blue is low)
+contour_map = plt.contourf(X_mesh, Y_mesh, predictions_prob, levels=50, cmap='RdYlBu_r', alpha=0.8)
+color_bar = plt.colorbar(contour_map)
+color_bar.set_label("Discriminator Prediction Confidence (Real Probability)", rotation=270, labelpad=15)
+
+# Superimpose the underlying ground truth points and fake generated points
+# Blue circles for real data, Lime green crosses for fake data (improved visibility)
+plt.scatter(real_points[:, 0], real_points[:, 1], color='blue', alpha=0.4, s=25, label="Real Data (y = 0.7x + 0.3)")
+plt.scatter(generated_points[:, 0], generated_points[:, 1], color='lime', marker='x', s=55, linewidths=2.0, alpha=0.9, label="GAN Generated Data")
+
+plt.title("Discriminator Decision Space Heatmap")
+plt.xlabel("X coordinate")
+plt.ylabel("Y coordinate")
+plt.legend(loc="upper left")
+plt.grid(True, linestyle=":", alpha=0.5)
+
+heatmap_save_path = os.path.join(current_dir, 'discriminator_heatmap.png')
+plt.savefig(heatmap_save_path)
+print(f"Discriminator heatmap saved to: {heatmap_save_path}")
