@@ -34,18 +34,18 @@ where:
 
 ### Dataset Parameters
 
-
- Start = 0 
- End = 1 
- Step Size = 0.002 
- Samples = 500 
+| Parameter | Value |
+|------------|---------|
+| Start | 0 |
+| End | 1 |
+| Step Size | 0.002 |
+| Samples | 500 |
 
 Implemented using PyTorch:
 
 ```python
 y = 0.7 * X + 0.3
 ```
-
 
 ---
 
@@ -114,11 +114,12 @@ Measurement
 
 ### Configuration
 
-
-Qubits = 4
-Trainable Parameters = 8
-Shots = 1000
-Backend = AerSimulator
+| Parameter | Value |
+|------------|---------|
+| Qubits | 4 |
+| Trainable Parameters | 8 |
+| Shots | 1000 |
+| Backend | AerSimulator |
 
 ### Example Circuit
 
@@ -195,10 +196,11 @@ Measures how realistic the generated samples appear.
 
 Interpretation:
 
-
-if score = 0.0 ---> Completely Fake 
-if score = 0.5 ---> Discriminator Confused 
-if score = 1.0 ---> Indistinguishable from Real
+| Score | Meaning |
+|---------|---------|
+| 0.0 | Completely Fake |
+| 0.5 | Discriminator Confused |
+| 1.0 | Indistinguishable from Real |
 
 ---
 
@@ -218,14 +220,15 @@ Lower values indicate closer agreement between distributions.
 
 ### QGAN Results
 
-
-Qubits = 4
-Parameters = 8
-Trials = 100
-Best Discriminator Score = 0.5707
-Real Mean = 0.4990 
-Generated Mean = 0.7113
-MSE = 0.0451
+| Metric | Value |
+|----------|----------|
+| Qubits | 4 |
+| Parameters | 8 |
+| Trials | 100 |
+| Best Discriminator Score | 0.5707 |
+| Real Mean | 0.4990 |
+| Generated Mean | 0.7113 |
+| MSE | 0.0451 |
 
 ### Observations
 
