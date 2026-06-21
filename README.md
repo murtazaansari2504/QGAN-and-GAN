@@ -42,8 +42,9 @@ where:
 
 Implemented using PyTorch:
 
-
+```python
 y = 0.7 * X + 0.3
+```
 
 
 ---
