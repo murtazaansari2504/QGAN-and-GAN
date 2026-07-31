@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd # Added pandas for CSV loading
 
 # Get the directory where train.py is currently located (.../classical_gan)
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -12,24 +13,28 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # Get the main repository root folder (.../QGAN-and-GAN)
 parent_dir = os.path.dirname(current_dir)
 
-# Point directly to the folder containing the dataset script
-dataset_dir = os.path.join(parent_dir, 'LR dataset')
-
-# Add the dataset folder to Python's system path
-sys.path.append(dataset_dir)
-
-# Now Python can successfully find and import the data and your local modules
-try:
-    from generationds import X, y  
-except ImportError:
-    print("Error: Could not find 'generationds.py' in the 'LR dataset' folder.")
-    sys.exit(1)
-
 from generator import Generator, LATENT_DIM
 from discriminator import Discriminator
 
-# Combine X and y into [x, y] coordinate pairs
-real_data = torch.cat((X, y), dim=1)
+# --- NEW DATA LOADING LOGIC ---
+csv_path = "/content/QGAN-and-GAN/LR dataset/linear_dataset.csv"
+
+try:
+    print(f"Loading dataset from: {csv_path}")
+    df = pd.read_csv(csv_path)
+    
+    # Extract the values and convert them to a PyTorch tensor
+    # We assume the CSV has two columns representing your X and Y coordinates.
+    # df.values returns a 2D numpy array which we convert to float32.
+    real_data = torch.tensor(df.values, dtype=torch.float32)
+    
+except FileNotFoundError:
+    print(f"Error: Could not find the dataset at {csv_path}")
+    sys.exit(1)
+except Exception as e:
+    print(f"An error occurred while loading the CSV: {e}")
+    sys.exit(1)
+# ------------------------------
 
 # HYPERPARAMETERS
 BATCH_SIZE = 32
@@ -45,7 +50,7 @@ optimizerG = optim.Adam(netG.parameters(), lr=LR)
 optimizerD = optim.Adam(netD.parameters(), lr=LR)
 
 # TRAINING LOOP
-print("Starting Classical GAN Training from custom folder...")
+print("Starting Classical GAN Training with CSV dataset...")
 
 for epoch in range(EPOCHS):
     permutation = torch.randperm(real_data.size(0))
@@ -91,7 +96,7 @@ with torch.no_grad():
 real_points = real_data.numpy()
 
 plt.figure(figsize=(8, 5))
-plt.scatter(real_points[:, 0], real_points[:, 1], label="Real Data (y = 0.7x + 0.3)", alpha=0.6, color="blue")
+plt.scatter(real_points[:, 0], real_points[:, 1], label="Real CSV Data", alpha=0.6, color="blue")
 plt.scatter(generated_points[:, 0], generated_points[:, 1], label="GAN Generated Data", alpha=0.6, marker='x', color="red")
 plt.title("Classical GAN Performance")
 plt.xlabel("X coordinate")
@@ -108,6 +113,7 @@ print(f"Plot successfully saved to: {save_path}")
 print("Generating decision boundary heatmap...")
 
 # Create a dense grid of 2D coordinates to query the Discriminator
+# You may need to adjust the min/max values (-0.2, 1.2) based on your CSV's actual data range
 x_grid_vals = np.linspace(-0.2, 1.2, 100)
 y_grid_vals = np.linspace(0.0, 1.2, 100)
 X_mesh, Y_mesh = np.meshgrid(x_grid_vals, y_grid_vals)
@@ -126,8 +132,7 @@ color_bar = plt.colorbar(contour_map)
 color_bar.set_label("Discriminator Prediction Confidence (Real Probability)", rotation=270, labelpad=15)
 
 # Superimpose the underlying ground truth points and fake generated points
-# Blue circles for real data, Lime green crosses for fake data (improved visibility)
-plt.scatter(real_points[:, 0], real_points[:, 1], color='blue', alpha=0.4, s=25, label="Real Data (y = 0.7x + 0.3)")
+plt.scatter(real_points[:, 0], real_points[:, 1], color='blue', alpha=0.4, s=25, label="Real CSV Data")
 plt.scatter(generated_points[:, 0], generated_points[:, 1], color='lime', marker='x', s=55, linewidths=2.0, alpha=0.9, label="GAN Generated Data")
 
 plt.title("Discriminator Decision Space Heatmap")
